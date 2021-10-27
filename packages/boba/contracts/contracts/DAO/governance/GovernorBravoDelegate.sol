@@ -15,10 +15,10 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
     uint public constant MAX_PROPOSAL_THRESHOLD = 100000e18; //100,000 BOBA
 
     /// @notice The minimum setable voting period
-    uint public constant MIN_VOTING_PERIOD = 1; // blocks
+    uint public constant MIN_VOTING_PERIOD = 1; // seconds
 
     /// @notice The max setable voting period
-    uint public constant MAX_VOTING_PERIOD = 80640; // 2 weeks
+    uint public constant MAX_VOTING_PERIOD = 14 days; // 2 weeks
 
     /// @notice The min setable voting delay
     uint public constant MIN_VOTING_DELAY = 1;
@@ -42,7 +42,7 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
       * @notice Used to initialize the contract during delegator contructor
       * @param timelock_ The address of the Timelock
       * @param comp_ The address of the COMP token
-      * @param votingPeriod_ The initial voting period
+      * @param votingPeriod_ The initial voting period in seconds
       * @param votingDelay_ The initial voting delay
       * @param proposalThreshold_ The initial proposal threshold
       */
@@ -87,7 +87,8 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
         }
 
         uint startBlock = add256(block.number, votingDelay);
-        uint endBlock = add256(startBlock, votingPeriod);
+        uint approxStartTimestamp = add256(block.timestamp, votingDelay * 15);
+        uint endTimestamp = add256(approxStartTimestamp, votingPeriod);
 
         proposalCount++;
 
@@ -101,7 +102,7 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
             calldatas: calldatas,
             description: description,
             startBlock: startBlock,
-            endBlock: endBlock,
+            endTimestamp: endTimestamp,
             forVotes: 0,
             againstVotes: 0,
             abstainVotes: 0,
@@ -112,7 +113,7 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
         proposals[newProposal.id] = newProposal;
         latestProposalIds[newProposal.proposer] = newProposal.id;
 
-        emit ProposalCreated(newProposal.id, msg.sender, targets, values, signatures, calldatas, startBlock, endBlock, description);
+        emit ProposalCreated(newProposal.id, msg.sender, targets, values, signatures, calldatas, startBlock, endTimestamp, description);
         return newProposal.id;
     }
 
@@ -200,7 +201,7 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
             return ProposalState.Canceled;
         } else if (block.number <= proposal.startBlock) {
             return ProposalState.Pending;
-        } else if (block.number <= proposal.endBlock) {
+        } else if (block.timestamp <= proposal.endTimestamp) {
             return ProposalState.Active;
         } else if (proposal.forVotes <= proposal.againstVotes || proposal.forVotes < quorumVotes) {
             return ProposalState.Defeated;
@@ -292,7 +293,7 @@ contract GovernorBravoDelegate is GovernorBravoDelegateStorageV1, GovernorBravoE
 
     /**
       * @notice Admin function for setting the voting period
-      * @param newVotingPeriod new voting period, in blocks
+      * @param newVotingPeriod new voting period, in seconds
       */
     function _setVotingPeriod(uint newVotingPeriod) external {
         require(msg.sender == admin, "GovernorBravo::_setVotingPeriod: admin only");
