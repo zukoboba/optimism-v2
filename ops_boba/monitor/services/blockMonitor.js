@@ -224,7 +224,7 @@ class BlockMonitorService extends OptimismEnv {
       }
       promiseCount = 0
     } else {
-      this.logger.info('No waiting cross domain message found.')
+      // this.logger.info('No waiting cross domain message found.')
     }
 
     if (checkWhitelist) {
