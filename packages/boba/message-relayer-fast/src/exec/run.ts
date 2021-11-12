@@ -89,6 +89,10 @@ const main = async () => {
     'num-confirmations',
     parseInt(env.NUM_CONFIRMATIONS, 10) || 0
   )
+  const MAX_TRANSACTIONS_NUMBER = config.uint(
+    'max-transaction-number',
+    parseInt(env.MAX_TRANSACTIONS_NUMBER, 10) || 1000
+  )
 
   if (!ADDRESS_MANAGER_ADDRESS) {
     throw new Error('Must pass ADDRESS_MANAGER_ADDRESS')
@@ -134,6 +138,7 @@ const main = async () => {
     gasRetryIncrement: GAS_RETRY_INCREMENT,
     numConfirmations: NUM_CONFIRMATIONS,
     resubmissionTimeout: RESUBMISSION_TIMEOUT * 1000,
+    maxTransactionsNumber: MAX_TRANSACTIONS_NUMBER,
   })
 
   await service.start()

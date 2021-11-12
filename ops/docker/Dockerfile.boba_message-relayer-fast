@@ -39,4 +39,4 @@ COPY packages/boba/message-relayer-fast/exec ./exec
 COPY packages/boba/message-relayer-fast/node_modules ./node_modules
 COPY packages/boba/message-relayer-fast/scripts ./scripts
 
-ENTRYPOINT ["./scripts/wait-for-l1-and-l2.sh", "./scripts/relayer-fast.sh"]
+ENTRYPOINT ["./scripts/wait-for-l1-and-l2.sh", "yarn start"]

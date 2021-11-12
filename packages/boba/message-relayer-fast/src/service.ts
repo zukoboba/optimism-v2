@@ -69,6 +69,9 @@ interface MessageRelayerOptions {
   resubmissionTimeout?: number
 
   maxWaitTxTimeS: number
+
+  // max transactions between each scan
+  maxTransactionsNumber: number
 }
 
 const optionSettings = {
@@ -361,7 +364,7 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
               this.state.nextUnfinalizedTxHeight -
               this.state.lastFinalizedTxHeight
 
-            if (numTransactionsToProcess > 1000) {
+            if (numTransactionsToProcess > this.options.maxTransactionsNumber) {
               break
             }
           }
@@ -419,7 +422,9 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
               },
               message,
             }
-            this.state.messageBuffer.push(messageToSend)
+            if (this.state.messageBuffer.length < 25) {
+              this.state.messageBuffer.push(messageToSend)
+            }
           }
 
           if (messages.length === 0) {
@@ -498,14 +503,11 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
       return SCCEvent[0]
     }
 
-    let startingBlock = this.state.lastQueriedL1Block + 1
-    const maxBlock = await this.options.l1RpcProvider.getBlockNumber()
-    while (startingBlock <= maxBlock) {
-      const endBlock = Math.min(
-        startingBlock + this.options.getLogsInterval,
-        maxBlock
-      )
-
+    let startingBlock = this.state.lastQueriedL1Block
+    while (
+      startingBlock < (await this.options.l1RpcProvider.getBlockNumber())
+    ) {
+      this.state.lastQueriedL1Block = startingBlock
       this.logger.info('Querying events', {
         startingBlock,
         endBlock: startingBlock + this.options.getLogsInterval,
@@ -515,19 +517,11 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
         await this.state.StateCommitmentChain.queryFilter(
           this.state.StateCommitmentChain.filters.StateBatchAppended(),
           startingBlock,
-          endBlock
+          startingBlock + this.options.getLogsInterval
         )
 
-      const ebn = []
-      events.forEach(e => {
-        ebn.push(e.blockNumber)
-      })
-      this.logger.info('Queried Events', { startingBlock, endBlock, ebn })
-
       this.state.eventCache = this.state.eventCache.concat(events)
-
-      this.state.lastQueriedL1Block = endBlock
-      startingBlock = endBlock + 1
+      startingBlock += this.options.getLogsInterval
 
       // We need to stop syncing early once we find the event we're looking for to avoid putting
       // *all* events into memory at the same time. Otherwise we'll get OOM killed.
@@ -854,8 +848,8 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
       10
     )
   }
-  
-  /* The filter makes sure that the message-relayer-fast only handles message traffic 
+
+  /* The filter makes sure that the message-relayer-fast only handles message traffic
      intended for it
   */
 
