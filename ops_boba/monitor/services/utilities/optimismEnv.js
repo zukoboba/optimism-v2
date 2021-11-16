@@ -19,8 +19,9 @@ const StateCommitmentChainJson = require('../../artifacts/contracts/L1/rollup/St
 
 require('dotenv').config()
 const env = process.env
-const L1_NODE_WEB3_URL = env.L1_NODE_WEB3_URL || 'http://localhost:8545'
-const L2_NODE_WEB3_URL = env.L2_NODE_WEB3_URL || 'http://localhost:9545'
+const L1_NODE_WEB3_URL = env.L1_NODE_WEB3_URL || 'http://localhost:9545'
+const L2_NODE_WEB3_URL = env.L2_NODE_WEB3_URL || 'http://localhost:8545'
+const L2_RPELICA_NODE_WEB3_URL = env.L2_REPLICA_NODE_WEB3_URL || 'http://localhost:8545'
 
 const MYSQL_HOST_URL = env.MYSQL_HOST_URL || '127.0.0.1'
 const MYSQL_PORT = env.MYSQL_PORT || 3306
@@ -95,6 +96,10 @@ class OptimismEnv {
     // })
     this.L2Provider = new ethers.providers.StaticJsonRpcProvider(
       L2_NODE_WEB3_URL
+    )
+
+    this.L2ProviderReplica = new ethers.providers.StaticJsonRpcProvider(
+      L2_RPELICA_NODE_WEB3_URL
     )
 
     this.MySQLHostURL = MYSQL_HOST_URL
@@ -251,7 +256,7 @@ class OptimismEnv {
         messengerAddress: this.L1CrossDomainMessenger,
       },
       l2: {
-        provider: this.L2Provider,
+        provider: this.L2ProviderReplica,
         messengerAddress: OVM_L2_CROSS_DOMAIN_MESSENGER,
       },
     })

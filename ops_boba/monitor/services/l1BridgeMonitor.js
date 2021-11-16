@@ -377,7 +377,7 @@ class l1BridgeMonitorService extends OptimismEnv {
       fromBlock: startBlock,
     }
 
-    const logs = await this.L2Provider.getLogs(filter)
+    const logs = await this.L2ProviderReplica.getLogs(filter)
     const matches = logs.filter((log) => log.topics[1] === l1ToL2msgHash)
 
     if (matches.length > 0) {
