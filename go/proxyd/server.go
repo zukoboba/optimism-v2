@@ -5,15 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
-
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/cors"
+	"io"
+	"net/http"
+	"time"
 )
 
 const (
@@ -110,7 +109,7 @@ func (s *Server) HandleRPC(w http.ResponseWriter, r *http.Request) {
 
 	req, err := ParseRPCReq(io.LimitReader(r.Body, s.maxBodySize))
 	if err != nil {
-		log.Info("rejected request with bad rpc request", "source", "rpc", "err", err, "r", r)
+		log.Info("rejected request with bad rpc request", "source", "rpc", "err", err)
 		RecordRPCError(ctx, BackendProxyd, MethodUnknown, err)
 		writeRPCError(w, nil, err)
 		return
@@ -211,11 +210,11 @@ func (s *Server) populateContext(w http.ResponseWriter, r *http.Request) context
 		)
 	}
 
-	// if authorization == "" || s.authenticatedPaths[authorization] == "" {
-	// 	log.Info("blocked unauthorized request", "authorization", authorization)
-	// 	w.WriteHeader(401)
-	// 	return nil
-	// }
+	if authorization == "" || s.authenticatedPaths[authorization] == "" {
+		log.Info("blocked unauthorized request", "authorization", authorization)
+		w.WriteHeader(401)
+		return nil
+	}
 
 	ctx := context.WithValue(r.Context(), ContextKeyAuth, s.authenticatedPaths[authorization])
 	return context.WithValue(

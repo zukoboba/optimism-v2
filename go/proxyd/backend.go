@@ -6,16 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/gorilla/websocket"
+	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"io/ioutil"
 	"math"
 	"math/rand"
 	"net/http"
 	"time"
-
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/gorilla/websocket"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -146,10 +145,10 @@ func NewBackend(
 }
 
 func (b *Backend) Forward(ctx context.Context, req *RPCReq) (*RPCRes, error) {
-	// if !b.Online() {
-	// 	RecordRPCError(ctx, b.Name, req.Method, ErrBackendOffline)
-	// 	return nil, ErrBackendOffline
-	// }
+	if !b.Online() {
+		RecordRPCError(ctx, b.Name, req.Method, ErrBackendOffline)
+		return nil, ErrBackendOffline
+	}
 	if b.IsRateLimited() {
 		RecordRPCError(ctx, b.Name, req.Method, ErrBackendOverCapacity)
 		return nil, ErrBackendOverCapacity
@@ -201,9 +200,9 @@ func (b *Backend) Forward(ctx context.Context, req *RPCReq) (*RPCRes, error) {
 }
 
 func (b *Backend) ProxyWS(clientConn *websocket.Conn, methodWhitelist *StringSet) (*WSProxier, error) {
-	// if !b.Online() {
-	// 	return nil, ErrBackendOffline
-	// }
+	if !b.Online() {
+		return nil, ErrBackendOffline
+	}
 	if b.IsWSSaturated() {
 		return nil, ErrBackendOverCapacity
 	}
