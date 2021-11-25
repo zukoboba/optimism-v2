@@ -147,10 +147,9 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
 
     this.logger.info('Connecting to L1CrossDomainMessenger...')
     const l1MessengerAddress =
-      this.options.l1MessengerFast ||
-      (await this.state.Lib_AddressManager.getAddress(
+      await this.state.Lib_AddressManager.getAddress(
         'Proxy__L1CrossDomainMessengerFast'
-      ))
+      )
     this.state.L1CrossDomainMessenger = loadContract(
       'L1CrossDomainMessenger',
       l1MessengerAddress,
@@ -890,7 +889,7 @@ export class MessageRelayerService extends BaseService<MessageRelayerOptions> {
     )
   }
 
-  /* The filter makes sure that the message-relayer-fast only handles message traffic 
+  /* The filter makes sure that the message-relayer-fast only handles message traffic
      intended for it
   */
 
