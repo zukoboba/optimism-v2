@@ -67,7 +67,7 @@ contract L2LiquidityPool is CrossDomainEnabled, ReentrancyGuardUpgradeable, Paus
         // user rewards
         uint256 lastAccUserReward; // Last accumulated user reward
         uint256 accUserReward; // Accumulated user reward.
-        uint256 accUserRewardPerShare; // Accumulated user rewards per share, times 1e12. See below.
+        uint256 accUserRewardPerShare; // Accumulated user rewards per share, times 1e18. See below.
 
         // owner rewards
         uint256 accOwnerReward; // Accumulated owner reward.
@@ -459,7 +459,7 @@ contract L2LiquidityPool is CrossDomainEnabled, ReentrancyGuardUpgradeable, Paus
             uint256 accUserRewardDiff = (pool.accUserReward.sub(pool.lastAccUserReward));
             if (pool.userDepositAmount != 0) {
                 pool.accUserRewardPerShare = pool.accUserRewardPerShare.add(
-                    accUserRewardDiff.mul(1e12).div(pool.userDepositAmount)
+                    accUserRewardDiff.mul(1e18).div(pool.userDepositAmount)
                 );
             }
             pool.lastAccUserReward = pool.accUserReward;
@@ -556,11 +556,11 @@ contract L2LiquidityPool is CrossDomainEnabled, ReentrancyGuardUpgradeable, Paus
         // pendingReward and update the reward debet.
         if (user.amount > 0) {
             user.pendingReward = user.pendingReward.add(
-                user.amount.mul(pool.accUserRewardPerShare).div(1e12).sub(user.rewardDebt)
+                user.amount.mul(pool.accUserRewardPerShare).div(1e18).sub(user.rewardDebt)
             );
-            user.rewardDebt = (user.amount.add(_amount)).mul(pool.accUserRewardPerShare).div(1e12);
+            user.rewardDebt = (user.amount.add(_amount)).mul(pool.accUserRewardPerShare).div(1e18);
         } else {
-            user.rewardDebt = _amount.mul(pool.accUserRewardPerShare).div(1e12);
+            user.rewardDebt = _amount.mul(pool.accUserRewardPerShare).div(1e18);
         }
 
         // transfer funds if users deposit ERC20
@@ -671,12 +671,12 @@ contract L2LiquidityPool is CrossDomainEnabled, ReentrancyGuardUpgradeable, Paus
 
         // calculate all the rewards and set it as pending rewards
         user.pendingReward = user.pendingReward.add(
-            user.amount.mul(pool.accUserRewardPerShare).div(1e12).sub(user.rewardDebt)
+            user.amount.mul(pool.accUserRewardPerShare).div(1e18).sub(user.rewardDebt)
         );
         // Update the user data
         user.amount = user.amount.sub(_amount);
         // update reward debt
-        user.rewardDebt = user.amount.mul(pool.accUserRewardPerShare).div(1e12);
+        user.rewardDebt = user.amount.mul(pool.accUserRewardPerShare).div(1e18);
         // update total user deposit amount
         pool.userDepositAmount = pool.userDepositAmount.sub(_amount);
 
@@ -754,13 +754,13 @@ contract L2LiquidityPool is CrossDomainEnabled, ReentrancyGuardUpgradeable, Paus
         require(pool.l2TokenAddress != address(0), "Token Address Not Registered");
 
         uint256 pendingReward = user.pendingReward.add(
-            user.amount.mul(pool.accUserRewardPerShare).div(1e12).sub(user.rewardDebt)
+            user.amount.mul(pool.accUserRewardPerShare).div(1e18).sub(user.rewardDebt)
         );
 
         require(pendingReward >= _amount, "Requested amount exceeds pendingReward");
 
         user.pendingReward = pendingReward.sub(_amount);
-        user.rewardDebt = user.amount.mul(pool.accUserRewardPerShare).div(1e12);
+        user.rewardDebt = user.amount.mul(pool.accUserRewardPerShare).div(1e18);
 
         if (_tokenAddress != Lib_PredeployAddresses.OVM_ETH) {
             IERC20(_tokenAddress).safeTransfer(_to, _amount);
