@@ -24,14 +24,14 @@ package:
 functions:
   token_getSupply:
     handler: token_getSupply.token_getSupply
-    memorySize: 10240 # optional, in MB, default is 1024
+    memorySize: 256 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
-    vpc:
-      securityGroupIds:
-        - ${file(env-mainnet.yml):SECURITY_GROUPS}
-      subnetIds:
-        - ${file(env-mainnet.yml):SUBNET_ID_1}
-        - ${file(env-mainnet.yml):SUBNET_ID_2}
+#    vpc:
+#      securityGroupIds:
+#        - ${file(env-mainnet.yml):SECURITY_GROUPS}
+#      subnetIds:
+#        - ${file(env-mainnet.yml):SUBNET_ID_1}
+#        - ${file(env-mainnet.yml):SUBNET_ID_2}
     events:
       - http:
           path: get.supply
@@ -40,14 +40,14 @@ functions:
 
   token_getCirculatingSupply:
     handler: token_getCirculatingSupply.token_getCirculatingSupply
-    memorySize: 10240 # optional, in MB, default is 1024
+    memorySize: 256 # optional, in MB, default is 1024
     timeout: 30 # optional, in seconds, default is 6
-    vpc:
-      securityGroupIds:
-        - ${file(env-mainnet.yml):SECURITY_GROUPS}
-      subnetIds:
-        - ${file(env-mainnet.yml):SUBNET_ID_1}
-        - ${file(env-mainnet.yml):SUBNET_ID_2}
+#    vpc:
+#      securityGroupIds:
+#        - ${file(env-mainnet.yml):SECURITY_GROUPS}
+#      subnetIds:
+#        - ${file(env-mainnet.yml):SUBNET_ID_1}
+#        - ${file(env-mainnet.yml):SUBNET_ID_2}
     events:
       - http:
           path: get.circulatingSupply
