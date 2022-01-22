@@ -30,7 +30,7 @@ $ BUILD=1 DAEMON=0 ./up_local.sh
 
 ## Spinning up the stack
 
-Stack spinup can take 15 minutes or more. There are many interdependent services to bring up with two waves of contract deployment and initialisation. Recommended settings - 10 CPUs, 30 to 40 GB of memory. You can either inspect the Docker `Dashboard>Containers/All>Ops` for the progress of the `ops_deployer` _or_ you can run this script to wait for the sequencer to be fully up:
+Stack spinup can take 15 minutes or more. There are many interdependent services to bring up with two waves of contract deployment and initialisation. Recommended settings - 10 CPUs, 30 to 40 GB of memory. You can either inspect the Docker `Dashboard>Containers/All>Ops` for the progress of the `ops_deployer` _or_ you can run this script to wait for the sequencer to be up:
 
 ```bash
 ./scripts/wait-for-sequencer.sh
