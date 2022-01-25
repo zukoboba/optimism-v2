@@ -17,6 +17,7 @@ from web3.middleware import geth_poa_middleware
 from web3.logs import STRICT, IGNORE, DISCARD, WARN
 import threading
 from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
+import pymysql
 
 logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s', datefmt='%Y%m%dT%H%M%S')
 logger = logging.getLogger('fraud-detector')

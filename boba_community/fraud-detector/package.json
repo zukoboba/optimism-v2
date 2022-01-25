@@ -1,0 +1,31 @@
+{
+  "name": "@boba/fraud-detector",
+  "version": "1.0.0",
+  "main": "dist/index",
+  "types": "dist/index",
+  "files": [
+    "dist/index",
+    "test/**/*.ts"
+  ],
+  "scripts": {
+    "start:service": "node ./exec/run-fraud-detector.js",
+    "start": "yarn start:service",
+    "build": "tsc -p ./tsconfig.build.json",
+    "clean": "rimraf  dist/ ./tsconfig.build.tsbuildinfo",
+    "test:integration": "hardhat --network boba test",
+    "lint": "yarn lint:fix && yarn lint:check",
+    "lint:fix": "prettier --config .prettierrc.json --write \"{src,exec,test}/**/*.ts\"",
+    "lint:check": "tslint --format stylish --project ."
+  },
+  "dependencies": {
+    "@eth-optimism/common-ts": "^0.2.1",
+    "@eth-optimism/contracts": "^0.5.9",
+    "@eth-optimism/core-utils": "^0.7.4",
+    "bcfg": "^0.1.7",
+    "dotenv": "^14.3.0",
+    "ethers": "^5.5.3",
+    "express": "^4.17.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.5"
+  }
+}
