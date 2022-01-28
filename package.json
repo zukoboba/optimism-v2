@@ -9,7 +9,13 @@
       "packages/boba/*",
       "l2geth",
       "integration-tests",
-      "specs"
+      "specs",
+      "go/gas-oracle",
+      "go/proxyd",
+      "go/op-exporter",
+      "ops/docker/rpc-proxy",
+      "ops/docker/hardhat",
+      "go/batch-submitter"
     ],
     "nohoist": [
       "examples/*"
