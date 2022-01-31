@@ -39,6 +39,9 @@ jobs:
   integration:
     needs: start-runner
     runs-on: ${{ needs.start-runner.outputs.label }}
+    env:
+        DOCKER_BUILDKIT: 1
+        COMPOSE_DOCKER_CLI_BUILD: 1
     steps:
       # Monorepo tests
       - uses: actions/checkout@v2
@@ -57,11 +60,13 @@ jobs:
 
       - name: Build the services
         working-directory: ./ops
-        run: ./scripts/build-ci.sh
+        run: |
+          ./scripts/stats.sh &
+          ./scripts/build-ci.sh
 
       - name: Bring the stack up
         working-directory: ./ops
-        run: NO_PULL=1 BUILD=0 DAEMON=1 ./up_local.sh
+        run: BUILD=2 DAEMON=1 ./up_local.sh
 
       - name: Wait for the Sequencer node
         working-directory: ./ops
