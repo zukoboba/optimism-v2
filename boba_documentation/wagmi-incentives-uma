@@ -1,0 +1,41 @@
+# WAGMI incentive program
+
+## Introduction
+
+The WAGMI incentives program is Boba Network’s take on liquidity mining 2.0. In collaboration with 
+UMA protocol, we are be distributing WAGMI options on $BOBA token to promising projects building on Boba. Users can earn WAGMI options using their favorite dApps on Boba Network. WAGMI options are KPI (key performance indicators) options redeemable for $BOBA tokens based on metrics relating to Boba Network, such as monthly active wallets or project specific TVL. 
+
+For more information, check out our [WAGMI webpage](https://boba.network/developers/wagmi/) or [tweet thread](https://twitter.com/bobanetwork/status/1478218201494294528)
+
+## Contracts
+
+All mainnet Boba contracts can be found [here](https://github.com/UMAprotocol/protocol/blob/master/packages/core/networks/288.json)
+
+**LSP contract** The UMA LSP contract is deployed on Boba Network at [0x5E9d23daa1b27754bd9BEc66B9E87FA0ce0470Ec](https://blockexplorer.boba.network/address/0x5E9d23daa1b27754bd9BEc66B9E87FA0ce0470Ec/transactions). This contract locks 2 BOBA per option on minting. UMA's in-depth documentation on minting KPI options can be found [here](https://docs.umaproject.org/kpi-options/usage-tutorial). 
+
+They also provided us with this example below:
+
+```
+# From UMA protocol repo on hardhat console I first load the LSP contract and BOBA as collateral:
+
+LongShortPair = getContract("LongShortPair").at("0x5e9d23daa1b27754bd9bec66b9e87fa0ce0470ec")
+collateralToken = getContract("ERC20").at("0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7")
+
+# Then I approved LSP to spend some BOBA tokens:
+
+await collateralToken.methods.approve(LongShortPair.options.address, web3.utils.toWei("10")).send({gas: 100000, gasPrice: 2 * 1000000000, from: (await web3.eth.getAccounts())[0]})
+
+# I minted pair of option tokens:
+
+await LongShortPair.methods.create(web3.utils.toWei("5")).send({gas: 300000, gasPrice: 2 * 1000000000, from: (await web3.eth.getAccounts())[0]})
+
+# And tested redeem:
+
+await LongShortPair.methods.redeem(web3.utils.toWei("2.5")).send({gas: 200000, gasPrice: 2 * 1000000000, from: (await web3.eth.getAccounts())[0]})
+```
+
+**LongShortPair contract** 0x4B9A968b87316Df5A2AEd7c4193F16cAb42A9208 is verified on sourcify as a full match on chain id 288. Note: you can check this yourself at https://repo.sourcify.dev/select-contract/ and see the verified files in the sourcify repo here: https://repo.sourcify.dev/contracts/full_match/288/0x4B9A968b87316Df5A2AEd7c4193F16cAb42A9208/. 
+
+**testlong contract** [0x4B9A968b87316Df5A2AEd7c4193F16cAb42A9208](https://blockexplorer.boba.network/address/0x19ED3DC3D0256102D213C7C0Dec215945663350b/transactions)
+
+**UMA's Optimistic oracle** https://blockexplorer.boba.network/address/0x7da554228555C8Bf3748403573d48a2138C6b848/transactions
